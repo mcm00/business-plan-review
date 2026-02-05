@@ -418,7 +418,7 @@ window.submitReply = async function(discussionId) {
     });
 
     input.value = '';
-    toggleReplyForm(discussionId);
+    window.toggleReplyForm(discussionId);
 
     // Reload discussions
     state.discussions = await fetchDiscussions();
