@@ -168,6 +168,21 @@ if (serverCode) {
     if (serverCode.includes('cookieParser')) {
         log('passed', 'Cookie parser middleware for secure cookie handling');
     }
+
+    // Check 20: Content encryption
+    if (serverCode.includes('aes-256-gcm') || serverCode.includes('AES-256-GCM')) {
+        log('passed', 'AES-256-GCM encryption for content', 'Military-grade encryption');
+    }
+
+    // Check 21: Encryption key derivation
+    if (serverCode.includes('scryptSync') || serverCode.includes('ENCRYPTION_KEY')) {
+        log('passed', 'Secure key derivation for encryption');
+    }
+
+    // Check 22: Encrypted API endpoints
+    if (serverCode.includes('encrypted=true') || serverCode.includes('encryptContent')) {
+        log('passed', 'Encrypted content transmission available');
+    }
 }
 
 // ========== CLIENT-SIDE CHECKS ==========

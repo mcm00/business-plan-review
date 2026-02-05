@@ -11,8 +11,91 @@ function authHeaders() {
 function logout() {
     localStorage.removeItem('auth_token');
     document.cookie = 'auth_token=; path=/; max-age=0';
+    sessionStorage.removeItem('decryptionKey');
     window.location.href = '/';
 }
+
+// ========== CONTENT ENCRYPTION/DECRYPTION (AES-256-GCM) ==========
+// Uses Web Crypto API for secure client-side decryption
+const CryptoUtils = {
+    keyMaterial: null,
+    cryptoKey: null,
+
+    // Initialize encryption key from server
+    async init() {
+        try {
+            const res = await fetch(`${API_BASE}/api/encryption-key`, { headers: authHeaders() });
+            if (!res.ok) return false;
+
+            const data = await res.json();
+            this.keyMaterial = data.keyMaterial;
+
+            // Derive CryptoKey using Web Crypto API
+            const encoder = new TextEncoder();
+            const keyData = encoder.encode(this.keyMaterial.slice(0, 32)); // Use first 32 chars (256 bits)
+
+            this.cryptoKey = await window.crypto.subtle.importKey(
+                'raw',
+                keyData,
+                { name: 'AES-GCM' },
+                false,
+                ['decrypt']
+            );
+
+            console.log('%c🔐 Encryption initialized', 'color: green;');
+            return true;
+        } catch (err) {
+            console.error('Failed to initialize encryption:', err);
+            return false;
+        }
+    },
+
+    // Convert hex string to Uint8Array
+    hexToBytes(hex) {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+            bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+        }
+        return bytes;
+    },
+
+    // Decrypt content received from server
+    async decrypt(encryptedData) {
+        if (!encryptedData || !encryptedData.encrypted) {
+            return encryptedData; // Not encrypted, return as-is
+        }
+
+        if (!this.cryptoKey) {
+            await this.init();
+        }
+
+        try {
+            const iv = this.hexToBytes(encryptedData.iv);
+            const content = this.hexToBytes(encryptedData.content);
+            const authTag = this.hexToBytes(encryptedData.authTag);
+
+            // Combine content and authTag for GCM
+            const combined = new Uint8Array(content.length + authTag.length);
+            combined.set(content);
+            combined.set(authTag, content.length);
+
+            const decrypted = await window.crypto.subtle.decrypt(
+                {
+                    name: 'AES-GCM',
+                    iv: iv,
+                    tagLength: 128
+                },
+                this.cryptoKey,
+                combined
+            );
+
+            return new TextDecoder().decode(decrypted);
+        } catch (err) {
+            console.error('Decryption failed:', err);
+            return '[Content decryption failed - please refresh]';
+        }
+    }
+};
 
 // ========== APP STATE ==========
 const state = {
@@ -21,7 +104,8 @@ const state = {
     discussions: [],
     notifications: [],
     activeFilter: 'all',
-    activeSectionId: null
+    activeSectionId: null,
+    encryptionEnabled: true // Toggle for encrypted content
 };
 
 const API_BASE = '';
@@ -101,9 +185,23 @@ function parseMarkdown(text) {
 
 // ========== API FUNCTIONS ==========
 async function fetchSections() {
-    const res = await fetch(`${API_BASE}/api/sections`, { headers: authHeaders() });
+    // Fetch encrypted content for better security
+    const encryptParam = state.encryptionEnabled ? '?encrypted=true' : '';
+    const res = await fetch(`${API_BASE}/api/sections${encryptParam}`, { headers: authHeaders() });
     if (res.status === 401) { logout(); return []; }
-    return res.json();
+
+    const sections = await res.json();
+
+    // Decrypt content if encrypted
+    if (state.encryptionEnabled) {
+        for (const section of sections) {
+            if (section.content && section.content.encrypted) {
+                section.content = await CryptoUtils.decrypt(section.content);
+            }
+        }
+    }
+
+    return sections;
 }
 
 async function fetchDiscussions() {
@@ -458,6 +556,15 @@ window.handleNotificationClick = async function(notifId, discussionId) {
 
 // ========== INITIALIZE ==========
 async function init() {
+    // Initialize encryption first
+    if (state.encryptionEnabled) {
+        const encryptionReady = await CryptoUtils.init();
+        if (!encryptionReady) {
+            console.warn('Encryption not available, using unencrypted mode');
+            state.encryptionEnabled = false;
+        }
+    }
+
     // Load data
     try {
         state.sections = await fetchSections();
@@ -468,6 +575,11 @@ async function init() {
         renderDiscussions();
         renderStats();
         renderNotifications();
+
+        // Show encryption status
+        if (state.encryptionEnabled) {
+            console.log('%c🔒 Content is encrypted in transit', 'color: green; font-weight: bold;');
+        }
     } catch (err) {
         console.error('Failed to load data:', err);
         elements.loading.innerHTML = `

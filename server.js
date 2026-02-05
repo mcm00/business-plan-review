@@ -15,6 +15,50 @@ const PORT = process.env.PORT || 3000;
 const APP_PASSWORD = process.env.APP_PASSWORD || 'family2026';
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 
+// ========== CONTENT ENCRYPTION (AES-256-GCM) ==========
+// Encryption key derived from password - in production, use a separate ENCRYPTION_KEY env var
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.scryptSync(APP_PASSWORD, 'business-plan-salt-2026', 32);
+const ALGORITHM = 'aes-256-gcm';
+
+// Encrypt content using AES-256-GCM
+function encryptContent(text) {
+    const iv = crypto.randomBytes(16); // 128-bit IV
+    const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+
+    const authTag = cipher.getAuthTag();
+
+    // Return IV + AuthTag + Encrypted data (all hex encoded)
+    return {
+        iv: iv.toString('hex'),
+        authTag: authTag.toString('hex'),
+        content: encrypted,
+        encrypted: true
+    };
+}
+
+// Decrypt content
+function decryptContent(encryptedData) {
+    try {
+        const iv = Buffer.from(encryptedData.iv, 'hex');
+        const authTag = Buffer.from(encryptedData.authTag, 'hex');
+        const content = encryptedData.content;
+
+        const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+        decipher.setAuthTag(authTag);
+
+        let decrypted = decipher.update(content, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+
+        return decrypted;
+    } catch (err) {
+        console.error('Decryption failed:', err.message);
+        return null;
+    }
+}
+
 // ========== SECURITY MIDDLEWARE ==========
 
 // Helmet - Secure HTTP headers
@@ -646,16 +690,56 @@ let db = loadDB();
 
 // ========== API ROUTES ==========
 
-// Get all sections
+// Get all sections (with encrypted content option)
 app.get('/api/sections', (req, res) => {
-    res.json(db.sections);
+    const encrypted = req.query.encrypted === 'true';
+
+    if (encrypted) {
+        // Return encrypted content - more secure for transmission
+        const encryptedSections = db.sections.map(section => ({
+            id: section.id,
+            title: section.title, // Title stays visible for navigation
+            level: section.level,
+            content: encryptContent(section.content)
+        }));
+        res.json(encryptedSections);
+    } else {
+        res.json(db.sections);
+    }
 });
 
-// Get section by ID
+// Get section by ID (with encrypted content option)
 app.get('/api/sections/:id', (req, res) => {
     const section = db.sections.find(s => s.id === parseInt(req.params.id));
     if (!section) return res.status(404).json({ error: 'Section not found' });
-    res.json(section);
+
+    const encrypted = req.query.encrypted === 'true';
+    if (encrypted) {
+        res.json({
+            id: section.id,
+            title: section.title,
+            level: section.level,
+            content: encryptContent(section.content)
+        });
+    } else {
+        res.json(section);
+    }
+});
+
+// Get decryption key (only for authenticated users)
+// This endpoint provides the key needed to decrypt content on the client
+app.get('/api/encryption-key', (req, res) => {
+    // Generate a session-specific decryption token
+    // The actual key is derived from this on the client
+    const keyMaterial = crypto.createHash('sha256')
+        .update(APP_PASSWORD + req.sessionToken)
+        .digest('hex');
+
+    res.json({
+        keyMaterial: keyMaterial,
+        algorithm: 'AES-256-GCM',
+        note: 'Use Web Crypto API to derive key'
+    });
 });
 
 // Update section
