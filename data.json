@@ -1,0 +1,71 @@
+{
+  "sections": [
+    {
+      "id": 1,
+      "title": "Executive Summary",
+      "level": 1,
+      "content": "## 1.1 VISION & MISSION\n\n### Vision Statement\nBuild a portfolio of 3-5 independent subscription SaaS companies solving pain points for small business owners, democratizing AI capabilities to help them compete with larger enterprises, generating $15,000-50,000/month passive income, with exit opportunities valued at $2M-5M+ by 2030.\n\n### Mission Statement\nEmpower small businesses with AI-powered tools that are affordable, easy to use, and deliver 10x value compared to existing solutions, while building sustainable wealth for our family and creating exit opportunities within 5 years.\n\n### Core Values\n- **Customer Obsession:** Build what customers actually need, not what we think is cool\n- **Simplicity:** 3 features done perfectly > 30 features done poorly\n- **Speed:** Ship weekly, iterate constantly, fail fast\n- **Transparency:** Honest pricing, clear communication, authentic brand\n- **Family First:** Build business that supports family life, not consumes it"
+    },
+    {
+      "id": 2,
+      "title": "Business Model Overview",
+      "level": 1,
+      "content": "### Structure\n**Holding Company Model:** One parent LLC owns 3-5 subsidiary LLCs (one per product)\n\n**Why This Structure:**\n- Risk isolation (if one product fails, others unaffected)\n- Separate exits (sell Company 1 without selling Company 2)\n- Clean accounting (P&L per product)\n- Easier valuation (buyers can value each independently)\n- Tax flexibility (allocate expenses strategically)\n\n### Revenue Model\n**B2B/B2C Subscription SaaS**\n\n**Characteristics:**\n- Monthly recurring revenue (MRR)\n- Month-to-month billing (no long contracts)\n- 14-day free trial (no credit card required)\n- Self-serve signup (no sales calls)\n- Credit card payments (Stripe)\n\n**Pricing Range:**\n- **Low-End Products:** $29-39/month (solopreneurs, very small businesses)\n- **Mid-Range Products:** $49-69/month (5-25 employee businesses) ← Primary target\n- **High-End Products:** $79-99/month (premium features or high ROI)\n\n**Unit Economics Target (Per Product):**\n- Customer Acquisition Cost (CAC): $50-150\n- Lifetime Value (LTV): $500-1,500 (12-24 month avg retention)\n- LTV:CAC Ratio: 5:1 minimum (world-class is 3:1)\n- Monthly Churn: <10% (industry average is 5-7%)"
+    },
+    {
+      "id": 3,
+      "title": "Market Focus",
+      "level": 1,
+      "content": "**Primary:** Small businesses in United States, 5-25 employees, $250K-2M annual revenue\n\n**Why Small Businesses:**\n- Underserved (enterprise tools too complex/expensive)\n- Large market (31.7M businesses <50 employees in US)\n- Decision-maker accessible (owner/manager, no procurement)\n- Willing to pay for time savings ($50-100/month affordable)\n- Self-serve buyers (no sales team needed)\n\n**Why NOT Enterprise:**\n- Require sales team (expensive, Francisco hates cold outreach)\n- Long sales cycles (6-12 months)\n- Complex requirements (feature bloat)\n- High expectations (24/7 support, SLAs, compliance)\n- Risk concentration (lose one customer = lose 20% revenue)\n\n### Go-to-Market Approach\n**NO COLD OUTREACH (Critical Constraint)**\n\n**Allowed Channels:**\n- ✅ Content marketing (blog posts, YouTube videos)\n- ✅ SEO (organic search traffic)\n- ✅ Paid ads (Google, Facebook - they come to us)\n- ✅ Product Hunt launches\n- ✅ App store distribution\n- ✅ Reddit/forum participation (helpful, not promotional)\n- ✅ Referral programs (customers bring customers)\n\n**Prohibited:**\n- ❌ Cold calling\n- ❌ Cold emailing\n- ❌ LinkedIn cold DMs\n- ❌ Door-to-door sales\n- ❌ Trade show booths (talking to strangers)"
+    },
+    {
+      "id": 4,
+      "title": "Ownership Structure",
+      "level": 1,
+      "content": "### Equity Distribution (All Companies)\n\n| Member | Ownership % | Voting Rights | Role |\n|--------|-------------|---------------|------|\n| **Ivone** | 51% | Yes (majority control) | Managing Member, WBE Certification, Strategic Decisions, Customer Relations, Support |\n| **Francisco** | 39% | Yes | Managing Member, Technology, Product, Development, Operations |\n| **Son 1 (Age 17)** | 5% | No (until age 25) | Development Assistant, QA Testing |\n| **Son 2 (Age 13)** | 5% | No (until age 25) | Testing, User Feedback |\n\n### Ownership Rationale\n\n**Ivone 51% (Women-Owned Business Qualification):**\n\n**Benefits:**\n- **WOSB Certification:** Federal government set-asides for women-owned small businesses\n- **WBE Certification:** Corporate vendor diversity programs (Fortune 500s)\n- **SBA Loan Priority:** Better terms, higher approval rates\n- **Grant Access:** Women entrepreneur grants (state/federal/private)\n- **Investor Appeal:** Some VCs prioritize women-owned (if we ever raise)\n\n**Francisco 39% (Primary Operator):**\n- Builds products (40+ hours/week Year 1-2)\n- Makes all technical decisions\n- Day-to-day operations\n- Largest time investment (sweat equity)\n\n**Sons 5% Each (Future Incentive):**\n- Learning experience (entrepreneurship education)\n- Skin in the game (when old enough to help)\n- Generational wealth (if companies succeed)\n- No voting until age 25 (avoid immature decisions)"
+    },
+    {
+      "id": 5,
+      "title": "Five-Year Success Metrics",
+      "level": 1,
+      "content": "### Year 1 (2026): Foundation & Launch\n\n**Company 1:**\n- ✅ MVP launched (Month 6)\n- ✅ 30-50 paying customers (Month 12)\n- ✅ $1,500-3,000 MRR (end of year)\n- ✅ Product-market fit validated (>50% trial-to-paid conversion)\n- ✅ NPS >40 (customers would recommend)\n\n**Business:**\n- ✅ LLC formed, all compliance complete\n- ✅ WBE certification obtained\n- ✅ Revenue: $6,000-12,000 (second half of year)\n- ✅ Expenses: $18,000-22,000\n- ✅ Net: -$6,000 to -$16,000 (expected loss)\n\n### Year 2 (2027): Scale Company 1, Launch Company 2\n\n**Company 1:**\n- ✅ 100-150 customers\n- ✅ $5,000-9,000 MRR\n- ✅ Revenue: $60,000-108,000\n- ✅ Profitability achieved (Month 18-20)\n\n**Company 2:**\n- ✅ MVP launched (Month 18)\n- ✅ 15-30 customers (end of Year 2)\n- ✅ $750-1,500 MRR\n\n### Year 3 (2028): Profitability & Company 3 Launch\n\n**Business:**\n- ✅ Combined MRR: $18,000-29,500\n- ✅ Combined Revenue: $216,000-354,000\n- ✅ Net Profit: $156,000-274,000\n- ✅ Francisco QUITS full-time job (Month 30-36)\n\n### Year 4 (2029): Optimization & Scale\n\n**Business:**\n- ✅ Combined MRR: $39,500-60,000\n- ✅ Combined Revenue: $474,000-720,000\n- ✅ Net Profit: $354,000-540,000\n\n### Year 5 (2030): Exit Preparation\n\n**Business:**\n- ✅ Combined MRR: $55,000-87,000\n- ✅ Combined Revenue: $660,000-1,044,000\n- ✅ Valuation (5-8x EBITDA): $2.25M-6M\n\n**Exit Options:**\n1. **Sell Portfolio:** $2.5M-6M (all three companies together)\n2. **Sell Company 1:** $1.5M-3.2M (largest, most mature)\n3. **Keep & Harvest:** $40K-65K/month passive income\n4. **Partial Exit:** Sell Company 1, keep 2 & 3 (diversify)"
+    },
+    {
+      "id": 6,
+      "title": "Investment Summary",
+      "level": 1,
+      "content": "### Total Capital Required\n\n**Year 1 Cash Needs:**\n- Infrastructure/subscriptions: $18,000 ($1,500/month × 12)\n- Marketing (Months 6-12): $3,000-4,000 ($500/month × 6-8)\n- **Total:** $21,000-22,000\n\n**Funding Sources:**\n\n| Source | Amount | Terms |\n|--------|--------|-------|\n| **Small Business Loan** | $15,000-20,000 | 5-year term, 6-12% interest |\n| **Francisco Cash Contribution** | $5,000-7,000 | Owner capital |\n| **Total Cash** | $20,000-27,000 | |\n\n**Non-Cash Contributions:**\n\n| Source | Amount | Type |\n|--------|--------|------|\n| **Francisco Equipment** | $7,500 | Homelab servers, computers, network gear |\n| **Francisco Sweat Equity (Year 1)** | $288,000 | 1,920 hours × $150/hour |\n| **Ivone Sweat Equity (Year 1)** | $62,400 | 624 hours × $100/hour |\n\n### Return on Investment (ROI) Projections\n\n| Year | Revenue | Net Profit | Cash ROI |\n|------|---------|------------|----------|\n| 1 | $6K-12K | -$12K to -$16K | Negative (investment year) |\n| 2 | $69K-126K | $29K-$86K | 85%-350% |\n| 3 | $216K-354K | $156K-$274K | 865%-1,720% |\n| 4 | $474K-720K | $354K-$540K | 2,635%-4,420% |\n| 5 | $660K-1,044K | $480K-$784K | 5,000%-8,350% |\n\n**Exit ROI (Year 5):**\n- Investment: $20,000-27,000\n- Exit Value: $2.25M-6M\n- **ROI: 11,250%-30,000%**"
+    },
+    {
+      "id": 7,
+      "title": "Company Structure",
+      "level": 1,
+      "content": "### Parent Company (Holding Company)\n\n**Name:** [Last Name] Tech Holdings LLC\n**Type:** Georgia Limited Liability Company (LLC)\n**Tax Classification:** Multi-Member Partnership (default)\n**Fiscal Year:** January 1 - December 31\n**Formation Date:** February 2026\n\n### Formation Process\n\n**Week 1 Actions:**\n1. ✅ Choose registered agent service (Northwest Registered Agent - $125/year)\n2. ✅ Register LLC with Georgia Secretary of State ($100)\n3. ✅ Obtain EIN (Employer Identification Number) - Free\n4. ✅ Open business bank account (Relay - free)\n5. ✅ Apply for business credit card (Capital One Spark Cash)\n\n### Subsidiary Companies (Future)\n\n**Company 1:** [To be named] LLC - Formation Month 4-5\n**Company 2:** [To be named] LLC - Formation Month 16-18\n**Company 3:** [To be named] LLC - Formation Month 28-30\n\n**Why Separate LLCs for Each Product:**\n\n**Legal Protection:**\n- If Company 1 gets sued, Companies 2-3 protected\n- Liability isolated to specific product\n\n**Financial Clarity:**\n- Separate P&L for each product\n- Easy to see which products are profitable\n\n**Exit Flexibility:**\n- Sell Company 1 individually without affecting 2-3\n- Different buyers for different products"
+    },
+    {
+      "id": 8,
+      "title": "Decision-Making Framework",
+      "level": 1,
+      "content": "### Authority Levels\n\n**Francisco (Sole Authority):**\n- Technology stack choices\n- Development priorities\n- Tool/software purchases <$1,000/month\n- Hiring contractors (within budget)\n- Code deployment decisions\n- Infrastructure decisions\n\n**Ivone (Sole Authority):**\n- Customer communication standards\n- Marketing message approval\n- Support policies\n- Community engagement approach\n\n**Joint Approval (Both Required):**\n- Pricing changes\n- Major features (>40 hours development)\n- Marketing budget >$500/month\n- Contracts >$5,000\n- Partnerships/integrations\n- Employee hiring\n\n**Supermajority (75%+ Required):**\n- Selling any company\n- Dissolving LLC\n- Loans >$50,000\n- Changing ownership structure\n- Adding new members\n- Major pivots (changing target market/product)\n\n### Protection Against Deadlock\n- If cannot agree on major decision: 30-day mediation\n- If still unresolved: Binding arbitration\n- Arbitrator selected jointly\n- Decision is final"
+    },
+    {
+      "id": 9,
+      "title": "Development Approach",
+      "level": 1,
+      "content": "### AI-First Development (90% AI-Generated Code)\n\n**Process:**\n- Francisco designs architecture (10-15 hours/week)\n- AI (Claude via Cursor IDE) generates code (90% of lines)\n- Francisco reviews/refines (10-20 hours/week)\n- Son assists with testing (5-10 hours/week)\n- Ship MVP in 8 weeks\n\n**Why This Works:**\n- 10x faster than traditional development\n- No need to hire developers ($100K+/year saved)\n- Francisco's 28 years experience guides AI effectively\n- Quality remains high (human oversight critical)\n\n### Tech Stack\n\n**Frontend:**\n- React or Vue.js\n- TailwindCSS for styling\n- Vercel for hosting\n\n**Backend:**\n- Node.js / Express\n- PostgreSQL or Supabase\n- Stripe for payments\n\n**Infrastructure:**\n- Vercel for deployment\n- GitHub for version control\n- Sentry for error monitoring"
+    },
+    {
+      "id": 10,
+      "title": "Exit Strategy",
+      "level": 1,
+      "content": "### Timeline: 2029-2030 (Years 4-5)\n\n**Options:**\n1. **Sell Individual Companies:** $500K-2M each (5-10x ARR for profitable SaaS)\n2. **Sell Portfolio:** $2M-5M+ (premium for diversified revenue)\n3. **Keep & Harvest:** $30K-50K/month passive income (if no good offers)\n\n### Target Buyers\n\n- Private equity firms (buying profitable SMB SaaS)\n- Strategic acquirers (competitors, adjacent companies)\n- Individual buyers (via MicroAcquire, Acquire.com)\n- Holding companies (aggregating related products)\n\n### Valuation Metrics\n\n**SaaS Valuation Formula:**\n- Revenue Multiple: 3-8x ARR (depending on growth rate)\n- EBITDA Multiple: 5-10x (for profitable companies)\n\n**What Increases Valuation:**\n- Low churn (<5% monthly)\n- High growth (>50% YoY)\n- Diversified customer base\n- Recurring revenue\n- Strong unit economics\n\n**Preparation for Exit:**\n- Clean financials (3 years of books)\n- Documented processes\n- Minimal owner dependency\n- Growth trajectory maintained"
+    }
+  ],
+  "discussions": [],
+  "notifications": [],
+  "nextId": {
+    "discussion": 1,
+    "reply": 1,
+    "notification": 1
+  }
+}
