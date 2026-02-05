@@ -1,3 +1,19 @@
+// ========== AUTH ==========
+function getAuthToken() {
+    return localStorage.getItem('auth_token');
+}
+
+function authHeaders() {
+    const token = getAuthToken();
+    return token ? { 'x-auth-token': token } : {};
+}
+
+function logout() {
+    localStorage.removeItem('auth_token');
+    document.cookie = 'auth_token=; path=/; max-age=0';
+    window.location.href = '/';
+}
+
 // ========== APP STATE ==========
 const state = {
     currentUser: 'Francisco',
@@ -85,58 +101,65 @@ function parseMarkdown(text) {
 
 // ========== API FUNCTIONS ==========
 async function fetchSections() {
-    const res = await fetch(`${API_BASE}/api/sections`);
+    const res = await fetch(`${API_BASE}/api/sections`, { headers: authHeaders() });
+    if (res.status === 401) { logout(); return []; }
     return res.json();
 }
 
 async function fetchDiscussions() {
-    const res = await fetch(`${API_BASE}/api/discussions`);
+    const res = await fetch(`${API_BASE}/api/discussions`, { headers: authHeaders() });
+    if (res.status === 401) { logout(); return []; }
     return res.json();
 }
 
 async function fetchStats() {
-    const res = await fetch(`${API_BASE}/api/stats`);
+    const res = await fetch(`${API_BASE}/api/stats`, { headers: authHeaders() });
+    if (res.status === 401) { logout(); return {}; }
     return res.json();
 }
 
 async function fetchNotifications(user) {
-    const res = await fetch(`${API_BASE}/api/notifications/${user}`);
+    const res = await fetch(`${API_BASE}/api/notifications/${user}`, { headers: authHeaders() });
+    if (res.status === 401) { logout(); return []; }
     return res.json();
 }
 
 async function createDiscussion(data) {
     const res = await fetch(`${API_BASE}/api/discussions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify(data)
     });
+    if (res.status === 401) { logout(); return {}; }
     return res.json();
 }
 
 async function addReply(discussionId, data) {
     const res = await fetch(`${API_BASE}/api/discussions/${discussionId}/replies`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify(data)
     });
+    if (res.status === 401) { logout(); return {}; }
     return res.json();
 }
 
 async function resolveDiscussion(id, resolved, resolvedBy) {
     const res = await fetch(`${API_BASE}/api/discussions/${id}/resolve`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ resolved, resolved_by: resolvedBy })
     });
+    if (res.status === 401) { logout(); return {}; }
     return res.json();
 }
 
 async function markNotificationRead(id) {
-    await fetch(`${API_BASE}/api/notifications/${id}/read`, { method: 'PATCH' });
+    await fetch(`${API_BASE}/api/notifications/${id}/read`, { method: 'PATCH', headers: authHeaders() });
 }
 
 async function markAllNotificationsRead(user) {
-    await fetch(`${API_BASE}/api/notifications/${user}/read-all`, { method: 'PATCH' });
+    await fetch(`${API_BASE}/api/notifications/${user}/read-all`, { method: 'PATCH', headers: authHeaders() });
 }
 
 // ========== RENDER FUNCTIONS ==========

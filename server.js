@@ -2,14 +2,99 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ========== SECURITY CONFIG ==========
+// Set these as environment variables on Render for production!
+const APP_PASSWORD = process.env.APP_PASSWORD || 'family2026';
+const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+
+// Simple session store (in-memory)
+const sessions = new Map();
+
+function generateToken() {
+    return crypto.randomBytes(32).toString('hex');
+}
+
+function createSession() {
+    const token = generateToken();
+    const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
+    sessions.set(token, { expiresAt });
+    return token;
+}
+
+function validateSession(token) {
+    if (!token) return false;
+    const session = sessions.get(token);
+    if (!session) return false;
+    if (Date.now() > session.expiresAt) {
+        sessions.delete(token);
+        return false;
+    }
+    return true;
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Auth middleware - protect all routes except login
+function requireAuth(req, res, next) {
+    // Allow login routes
+    if (req.path === '/login' || req.path === '/api/login' || req.path === '/api/verify') {
+        return next();
+    }
+
+    // Check for token in cookie or header
+    const token = req.headers['x-auth-token'] ||
+                  (req.headers.cookie && req.headers.cookie.match(/auth_token=([^;]+)/)?.[1]);
+
+    if (!validateSession(token)) {
+        // For API requests, return 401
+        if (req.path.startsWith('/api/')) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        // For page requests, serve login page
+        return res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    }
+
+    next();
+}
+
+app.use(requireAuth);
 app.use(express.static(path.join(__dirname, 'public')));
+
+// ========== AUTH ROUTES ==========
+app.post('/api/login', (req, res) => {
+    const { password } = req.body;
+
+    if (password === APP_PASSWORD) {
+        const token = createSession();
+        res.json({ success: true, token });
+    } else {
+        res.status(401).json({ error: 'Invalid password' });
+    }
+});
+
+app.get('/api/verify', (req, res) => {
+    const token = req.headers['x-auth-token'];
+    if (validateSession(token)) {
+        res.json({ valid: true });
+    } else {
+        res.status(401).json({ valid: false });
+    }
+});
+
+app.post('/api/logout', (req, res) => {
+    const token = req.headers['x-auth-token'];
+    if (token) {
+        sessions.delete(token);
+    }
+    res.json({ success: true });
+});
 
 // ========== JSON FILE DATABASE ==========
 const DB_FILE = path.join(__dirname, 'data.json');
@@ -633,13 +718,16 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
-║     🚀 Business Plan Review App                               ║
+║     🔐 Business Plan Review App (Password Protected)          ║
 ║                                                               ║
 ║     Server running!                                           ║
 ║                                                               ║
 ║     📱 Access the app:                                        ║
 ║        • Mac:    http://localhost:${PORT}                       ║
 ║        • iPhone: http://${localIP}:${PORT}                    ║
+║                                                               ║
+║     🔑 Default password: family2026                           ║
+║        (Change via APP_PASSWORD env var)                      ║
 ║                                                               ║
 ║     Press Ctrl+C to stop                                      ║
 ║                                                               ║
