@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -56,6 +57,26 @@ const apiLimiter = rateLimit({
 app.use('/api/login', loginLimiter);
 app.use('/api/', apiLimiter);
 
+// ========== SECURITY LOGGING ==========
+// Log suspicious activities
+const securityLog = [];
+const MAX_LOG_SIZE = 1000;
+
+function logSecurityEvent(type, details, req) {
+    const event = {
+        timestamp: new Date().toISOString(),
+        type,
+        details,
+        ip: req?.ip || req?.connection?.remoteAddress || 'unknown',
+        userAgent: req?.headers?.['user-agent'] || 'unknown'
+    };
+    securityLog.unshift(event);
+    if (securityLog.length > MAX_LOG_SIZE) {
+        securityLog.pop();
+    }
+    console.log(`[SECURITY] ${type}: ${JSON.stringify(details)}`);
+}
+
 // Simple session store (in-memory)
 const sessions = new Map();
 
@@ -104,6 +125,7 @@ app.use(cors({
     origin: process.env.CORS_ORIGIN || true, // In production, set specific origin
     credentials: true
 }));
+app.use(cookieParser()); // Parse cookies for httpOnly auth
 app.use(express.json({ limit: '10kb' })); // Limit body size
 
 // Auth middleware - protect all routes except login
@@ -113,9 +135,8 @@ function requireAuth(req, res, next) {
         return next();
     }
 
-    // Check for token in cookie or header
-    const token = req.headers['x-auth-token'] ||
-                  (req.headers.cookie && req.headers.cookie.match(/auth_token=([^;]+)/)?.[1]);
+    // Check for token in httpOnly cookie (preferred) or header (fallback)
+    const token = req.cookies?.auth_token || req.headers['x-auth-token'];
 
     if (!validateSession(token)) {
         // For API requests, return 401
@@ -126,6 +147,8 @@ function requireAuth(req, res, next) {
         return res.sendFile(path.join(__dirname, 'public', 'login.html'));
     }
 
+    // Add user session info to request for logging
+    req.sessionToken = token;
     next();
 }
 
@@ -139,8 +162,24 @@ app.post('/api/login', (req, res) => {
     // Use timing-safe comparison to prevent timing attacks
     if (secureCompare(password || '', APP_PASSWORD)) {
         const token = createSession();
+
+        // Log successful login
+        logSecurityEvent('LOGIN_SUCCESS', { message: 'User logged in successfully' }, req);
+
+        // Set httpOnly cookie (more secure - not accessible via JavaScript)
+        res.cookie('auth_token', token, {
+            httpOnly: true,           // Prevents XSS attacks from stealing token
+            secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+            sameSite: 'strict',       // Prevents CSRF attacks
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            path: '/'
+        });
+
         res.json({ success: true, token });
     } else {
+        // Log failed login attempt
+        logSecurityEvent('LOGIN_FAILED', { message: 'Invalid password attempt' }, req);
+
         // Add small random delay to further prevent timing attacks
         setTimeout(() => {
             res.status(401).json({ error: 'Invalid password' });
@@ -149,7 +188,7 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/verify', (req, res) => {
-    const token = req.headers['x-auth-token'];
+    const token = req.headers['x-auth-token'] || req.cookies?.auth_token;
     if (validateSession(token)) {
         res.json({ valid: true });
     } else {
@@ -158,11 +197,26 @@ app.get('/api/verify', (req, res) => {
 });
 
 app.post('/api/logout', (req, res) => {
-    const token = req.headers['x-auth-token'];
+    const token = req.headers['x-auth-token'] || req.cookies?.auth_token;
     if (token) {
         sessions.delete(token);
     }
+
+    // Clear the httpOnly cookie
+    res.clearCookie('auth_token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/'
+    });
+
     res.json({ success: true });
+});
+
+// Security log endpoint (view recent security events)
+app.get('/api/security-log', (req, res) => {
+    // Only return last 50 events
+    res.json(securityLog.slice(0, 50));
 });
 
 // ========== JSON FILE DATABASE ==========

@@ -562,3 +562,181 @@ async function init() {
 
 // Start app
 document.addEventListener('DOMContentLoaded', init);
+
+// ========== CONTENT PROTECTION ==========
+// Based on 2026 best practices for intellectual property protection
+(function() {
+    'use strict';
+
+    // 1. Disable right-click context menu
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        showToast('Right-click disabled for content protection');
+        return false;
+    });
+
+    // 2. Disable text selection on content areas
+    document.addEventListener('selectstart', function(e) {
+        // Allow selection in input fields and textareas
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return true;
+        }
+        e.preventDefault();
+        return false;
+    });
+
+    // 3. Disable copy, cut, paste keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Allow in input fields and textareas
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return true;
+        }
+
+        // Block Ctrl+C, Ctrl+X, Ctrl+A, Ctrl+P, Ctrl+S, Ctrl+U
+        if (e.ctrlKey || e.metaKey) {
+            const blockedKeys = ['c', 'x', 'a', 'p', 's', 'u'];
+            if (blockedKeys.includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                showToast('This action is disabled for content protection');
+                return false;
+            }
+        }
+
+        // Block F12 (DevTools), Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+        if (e.key === 'F12') {
+            e.preventDefault();
+            return false;
+        }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+            const blockedShiftKeys = ['i', 'j', 'c'];
+            if (blockedShiftKeys.includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        return true;
+    });
+
+    // 4. Disable copy and cut events
+    document.addEventListener('copy', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            showToast('Copying is disabled for content protection');
+            return false;
+        }
+    });
+
+    document.addEventListener('cut', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // 5. Disable drag and drop of text/images
+    document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    // 6. Disable print screen (partial - browser dependent)
+    document.addEventListener('keyup', function(e) {
+        if (e.key === 'PrintScreen') {
+            // Clear clipboard (works in some browsers)
+            navigator.clipboard.writeText('').catch(() => {});
+            showToast('Screenshots are discouraged for content protection');
+        }
+    });
+
+    // 7. Detect DevTools opening (basic detection)
+    let devToolsOpen = false;
+    const threshold = 160;
+
+    const detectDevTools = function() {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+
+        if (widthThreshold || heightThreshold) {
+            if (!devToolsOpen) {
+                devToolsOpen = true;
+                console.clear();
+                console.log('%c⚠️ Content Protection Active', 'color: red; font-size: 24px; font-weight: bold;');
+                console.log('%cThis business plan is confidential and protected.', 'color: orange; font-size: 14px;');
+            }
+        } else {
+            devToolsOpen = false;
+        }
+    };
+
+    // Check periodically
+    setInterval(detectDevTools, 1000);
+
+    // 8. Add CSS-based protection
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Disable text selection on content */
+        .section-content, .section-title, .header-title {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Allow selection in form elements */
+        input, textarea, .form-textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* Disable image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+
+        /* Disable print styles */
+        @media print {
+            body * {
+                display: none !important;
+            }
+            body::after {
+                content: "Printing is disabled for content protection.";
+                display: block;
+                font-size: 24px;
+                text-align: center;
+                padding: 50px;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 9. Session activity monitoring
+    let lastActivity = Date.now();
+    const sessionTimeout = 30 * 60 * 1000; // 30 minutes
+
+    const updateActivity = function() {
+        lastActivity = Date.now();
+    };
+
+    document.addEventListener('mousemove', updateActivity);
+    document.addEventListener('keypress', updateActivity);
+    document.addEventListener('click', updateActivity);
+    document.addEventListener('scroll', updateActivity);
+
+    // Auto-logout on inactivity
+    setInterval(function() {
+        if (Date.now() - lastActivity > sessionTimeout) {
+            showToast('Session expired due to inactivity');
+            setTimeout(logout, 2000);
+        }
+    }, 60000); // Check every minute
+
+    console.log('%c🔒 Content Protection Enabled', 'color: green; font-size: 12px;');
+})();

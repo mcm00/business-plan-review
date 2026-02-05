@@ -148,6 +148,26 @@ if (serverCode) {
     if (serverCode.includes("limit: '10kb'") || serverCode.includes('limit:')) {
         log('passed', 'Request body size limited', 'Prevents large payload attacks');
     }
+
+    // Check 16: httpOnly cookies
+    if (serverCode.includes('httpOnly: true')) {
+        log('passed', 'httpOnly cookies enabled', 'Protects against XSS token theft');
+    }
+
+    // Check 17: SameSite cookie
+    if (serverCode.includes("sameSite: 'strict'") || serverCode.includes('sameSite: "strict"')) {
+        log('passed', 'SameSite cookie protection', 'Prevents CSRF attacks');
+    }
+
+    // Check 18: Security logging
+    if (serverCode.includes('logSecurityEvent') || serverCode.includes('security-log')) {
+        log('passed', 'Security event logging implemented');
+    }
+
+    // Check 19: Cookie parser
+    if (serverCode.includes('cookieParser')) {
+        log('passed', 'Cookie parser middleware for secure cookie handling');
+    }
 }
 
 // ========== CLIENT-SIDE CHECKS ==========
@@ -178,6 +198,20 @@ if (clientCode) {
         log('high', 'document.write() detected', 'Can be exploited for XSS');
     } else {
         log('passed', 'No document.write() usage');
+    }
+
+    // Check 19: Content protection features
+    if (clientCode.includes('contextmenu') && clientCode.includes('preventDefault')) {
+        log('passed', 'Right-click protection enabled');
+    }
+    if (clientCode.includes('selectstart')) {
+        log('passed', 'Text selection protection enabled');
+    }
+    if (clientCode.includes('@media print')) {
+        log('passed', 'Print protection enabled');
+    }
+    if (clientCode.includes('sessionTimeout') || clientCode.includes('lastActivity')) {
+        log('passed', 'Session activity monitoring enabled');
     }
 }
 
