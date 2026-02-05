@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -11,6 +13,48 @@ const PORT = process.env.PORT || 3000;
 // Set these as environment variables on Render for production!
 const APP_PASSWORD = process.env.APP_PASSWORD || 'family2026';
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+
+// ========== SECURITY MIDDLEWARE ==========
+
+// Helmet - Secure HTTP headers
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'"],
+            frameSrc: ["'none'"],
+            objectSrc: ["'none'"],
+            baseUri: ["'self'"],
+            formAction: ["'self'"]
+        }
+    },
+    crossOriginEmbedderPolicy: false // Allow Google Fonts
+}));
+
+// Rate limiting - prevent brute force attacks
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 attempts per window
+    message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+const apiLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 100, // 100 requests per minute
+    message: { error: 'Too many requests. Please slow down.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+// Apply rate limiting
+app.use('/api/login', loginLimiter);
+app.use('/api/', apiLimiter);
 
 // Simple session store (in-memory)
 const sessions = new Map();
@@ -37,9 +81,30 @@ function validateSession(token) {
     return true;
 }
 
+// Timing-safe password comparison to prevent timing attacks
+function secureCompare(input, secret) {
+    if (typeof input !== 'string' || typeof secret !== 'string') {
+        return false;
+    }
+    const inputBuffer = Buffer.from(input);
+    const secretBuffer = Buffer.from(secret);
+
+    // If lengths differ, still do comparison to prevent timing leak
+    if (inputBuffer.length !== secretBuffer.length) {
+        // Compare with itself to maintain constant time
+        crypto.timingSafeEqual(inputBuffer, inputBuffer);
+        return false;
+    }
+
+    return crypto.timingSafeEqual(inputBuffer, secretBuffer);
+}
+
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || true, // In production, set specific origin
+    credentials: true
+}));
+app.use(express.json({ limit: '10kb' })); // Limit body size
 
 // Auth middleware - protect all routes except login
 function requireAuth(req, res, next) {
@@ -71,11 +136,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/api/login', (req, res) => {
     const { password } = req.body;
 
-    if (password === APP_PASSWORD) {
+    // Use timing-safe comparison to prevent timing attacks
+    if (secureCompare(password || '', APP_PASSWORD)) {
         const token = createSession();
         res.json({ success: true, token });
     } else {
-        res.status(401).json({ error: 'Invalid password' });
+        // Add small random delay to further prevent timing attacks
+        setTimeout(() => {
+            res.status(401).json({ error: 'Invalid password' });
+        }, Math.random() * 100);
     }
 });
 

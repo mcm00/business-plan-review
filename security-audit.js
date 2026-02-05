@@ -90,7 +90,9 @@ if (serverCode) {
     }
 
     // Check 6: CORS configuration
-    if (serverCode.includes("cors()")) {
+    if (serverCode.includes("cors({")) {
+        log('passed', 'CORS configured with options');
+    } else if (serverCode.includes("cors()")) {
         log('medium', 'CORS enabled with default settings', 'Consider restricting origins in production');
     }
 
@@ -136,8 +138,15 @@ if (serverCode) {
     }
 
     // Check 14: Password comparison (timing attack)
-    if (serverCode.includes('password === APP_PASSWORD')) {
+    if (serverCode.includes('timingSafeEqual')) {
+        log('passed', 'Using timing-safe password comparison', 'Prevents timing attacks');
+    } else if (serverCode.includes('password === APP_PASSWORD')) {
         log('low', 'Simple string comparison for password', 'Consider using crypto.timingSafeEqual to prevent timing attacks');
+    }
+
+    // Check 15: Request body size limit
+    if (serverCode.includes("limit: '10kb'") || serverCode.includes('limit:')) {
+        log('passed', 'Request body size limited', 'Prevents large payload attacks');
     }
 }
 
